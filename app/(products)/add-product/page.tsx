@@ -7,11 +7,13 @@ import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import Papa from "papaparse";
+import { useToast } from "@/hooks/use-toast";
 
 const acceptableCsvFileTypes = ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
 type CsvRow = Record<string, string>;
 
 const AddProducts = () => {
+    const {toast} = useToast()
     const [tableData, setTableData] = useState<CsvRow[]>([]);
     const [headers, setHeaders] = useState<string[]>([]);
     const [csvFile, setCsvFile] = useState<File | null>(null);
@@ -24,7 +26,9 @@ const AddProducts = () => {
 
     const uploadCsv = () => {
         if (!csvFile) {
-            alert("Please select a file first!");
+            toast({title:"Please select a file first!",
+                variant:"destructive"
+            });
             return;
         }
 
@@ -36,6 +40,10 @@ const AddProducts = () => {
                     const parsedData: CsvRow[] = results.data as CsvRow[];
                     setHeaders(Object.keys(parsedData[0] || {})); // Ensure it's an object before calling Object.keys()
                     setTableData(parsedData);
+                    toast({
+                        title: "Success",
+                        description: "Csv imported successfully",
+                      })
                 } else {
                     alert("The CSV file is empty or invalid.");
                 }
@@ -49,7 +57,27 @@ const AddProducts = () => {
                 <ChevronLeft size={30} className="bg-white rounded-full p-1"/>
             </Link>
             <h1 className="text-center text-2xl font-serif">Add Products</h1>
-            <div className="h-screen flex flex-col w-full justify-center items-center">
+            <aside className="mt-10">
+                <h1 className="text-center font-semibold">
+                    General constraints
+                </h1>
+                <div className="flex gap-4 w-full max-w-[23rem] mx-auto mt-8">
+                   <label className="flex flex-col w-1/2">
+                    <p className="font-medium">Total Minimum Order Quantity (MOQ)</p>
+                    <input type="number" min="0" placeholder="0"
+                     className="h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]" />
+                    </label>
+                    <label className="flex flex-col w-1/2">
+                    <p className="font-medium">Transport Capacity Constraint(Tr)</p>
+                    <input type="number" min="1" placeholder="0"
+                    className="h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]" />
+                    </label>
+                </div>
+                <div className="flex w-full max-w-[23rem] mx-auto mt-2">
+                    <Button>Save</Button>
+                </div>
+            </aside>
+            <div className="h-screen flex flex-col w-full justify-center items-center -mt-[8rem]">
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] w-[30%]">
