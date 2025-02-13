@@ -13,9 +13,9 @@ const acceptableCsvFileTypes = ".csv, application/vnd.openxmlformats-officedocum
 type CsvRow = Record<string, string>; // Properly type CSV rows
 
 const Addproducts = () => {
-    const [tableData, setTableData] = useState<CsvRow[]>([]);
-    const [headers, setHeaders] = useState<string[]>([]);
-    const [csvFile, setCsvFile] = useState<File | null>(null);
+    const [tableData, setTableData] = useState<any>([]);
+    const [headers, setHeaders] = useState<any>([]);
+    const [csvFile, setCsvFile] = useState<any>(null);
 
     const onFileChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
