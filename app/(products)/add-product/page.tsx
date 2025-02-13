@@ -1,24 +1,25 @@
 "use client";
+
 import { useState } from "react";
-import { Camera, ChevronLeft, Download, Plus, Trash } from "lucide-react";
+import { Camera, ChevronLeft, Download, Plus } from "lucide-react";
 import Link from "next/link";
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import Papa from "papaparse";
 
 const acceptableCsvFileTypes = ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
 
-type CsvRow = Record<string, string>; // Properly type CSV rows
+type CsvRow = Record<string, string>; // Define CSV row type
 
-const Addproducts = () => {
-    const [tableData, setTableData] = useState<any>([]);
-    const [headers, setHeaders] = useState<any>([]);
-    const [csvFile, setCsvFile] = useState<any>(null);
+const AddProducts = () => {
+    const [tableData, setTableData] = useState<CsvRow[]>([]);
+    const [headers, setHeaders] = useState<string[]>([]);
+    const [csvFile, setCsvFile] = useState<File | null>(null);
 
     const onFileChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
+        if (e.target.files?.length) {
             setCsvFile(e.target.files[0]);
         }
     };
@@ -32,9 +33,9 @@ const Addproducts = () => {
         Papa.parse<CsvRow>(csvFile, {
             skipEmptyLines: true,
             header: true,
-            complete: function (results) {
+            complete: (results) => {
                 if (results.data.length > 0) {
-                    setHeaders(Object.keys(results.data[0]));
+                    setHeaders(Object.keys(results.data[0] as CsvRow));
                     setTableData(results.data);
                 } else {
                     alert("The CSV file is empty or invalid.");
@@ -44,13 +45,13 @@ const Addproducts = () => {
     };
 
     return (
-        <section className='p-8 w-full h-screen'>
+        <section className="p-8 w-full h-screen">
             <Link href="/">
                 <ChevronLeft size={30} className="bg-white rounded-full p-1" />
             </Link>
-            <h1 className='text-center text-2xl font-serif'>Add Products</h1>
+            <h1 className="text-center text-2xl font-serif">Add Products</h1>
 
-            <div className='h-screen flex flex-col w-full justify-center items-center'>
+            <div className="h-screen flex flex-col w-full justify-center items-center">
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] w-[30%]">
@@ -105,7 +106,9 @@ const Addproducts = () => {
                                 <DialogContent>
                                     <DialogTitle className="font-bold text-2xl text-center">CSV Import</DialogTitle>
                                     <input type="file" accept={acceptableCsvFileTypes} onChange={onFileChangeHandler} />
-                                   <DialogClose><Button onClick={uploadCsv} className="mt-4">Upload CSV</Button></DialogClose> 
+                                    <DialogClose>
+                                        <Button onClick={uploadCsv} className="mt-4">Upload CSV</Button>
+                                    </DialogClose>
                                 </DialogContent>
                             </Dialog>
                         </div>
@@ -139,4 +142,4 @@ const Addproducts = () => {
     );
 };
 
-export default Addproducts;
+export default AddProducts;
