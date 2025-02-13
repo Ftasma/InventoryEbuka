@@ -1,0 +1,58 @@
+// import { clerkMiddleware } from "@clerk/nextjs/server";
+
+// export default clerkMiddleware();
+
+// export const config = {
+//   matcher: [
+//     // Skip Next.js internals and all static files, unless found in search params
+//     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+//     // Always run for API routes
+//     '/(api|trpc)(.*)',
+//   ],
+// };
+
+
+
+// import { clerkMiddleware } from "@clerk/nextjs/server";
+// import { NextResponse } from "next/server";
+
+// export default clerkMiddleware(async (auth, req) => {
+//   const { userId } = await auth();
+//   const pathname = new URL(req.url).pathname;
+
+//   // Prevent infinite redirect by allowing access to sign-in page
+//   if (!userId && pathname !== "/sign-in") {
+//     const signInUrl = new URL("/sign-in", req.url);
+//     signInUrl.searchParams.set("redirect_url", req.url); // Store return URL
+//     return NextResponse.redirect(signInUrl);
+//   }
+
+//   return NextResponse.next();
+// });
+
+// export const config = {
+//   matcher: [
+//     // Skip Next.js internals and all static files
+//     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+//     // Always run for API routes
+//     '/(api|trpc)(.*)',
+//   ],
+// };
+
+
+// import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+
+// const isProtectedRoute = createRouteMatcher(['/add-category(.*)','/add-product(.*)'])
+
+// export default clerkMiddleware(async (auth, req) => {
+//   if (isProtectedRoute(req)) await auth.protect()
+// })
+
+// export const config = {
+//   matcher: [
+//     // Skip Next.js internals and all static files, unless found in search params
+//     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+//     // Always run for API routes
+//     '/(api|trpc)(.*)',
+//   ],
+// }
