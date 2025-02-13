@@ -32,7 +32,7 @@ const Addproducts = () => {
             header: true,
             complete: function (results) {
                 if (results.data.length > 0) {
-                    setHeaders(Object.keys(results.data[0]));
+                    setHeaders(Object.keys(results.data[0] as object));
                     setTableData(results.data);
                 } else {
                     alert("The CSV file is empty or invalid.");
