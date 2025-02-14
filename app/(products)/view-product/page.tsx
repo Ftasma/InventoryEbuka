@@ -38,6 +38,7 @@ export default function ViewProduct() {
                     </TableRow>
                 </TableBody>
             </Table>
+            
             </div>
         </section>
     );

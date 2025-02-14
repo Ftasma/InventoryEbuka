@@ -99,22 +99,7 @@ const AddProducts = () => {
                                     <DialogTitle className="font-bold text-2xl text-center">
                                         Add New Product
                                     </DialogTitle>
-                                    <label className="h-[10rem] w-[15rem] bg-white rounded-lg flex flex-col items-center justify-center mx-auto cursor-pointer border border-gray-300 hover:border-gray-400 transition">
-                                        <Camera size={50} className="text-[#009951]" />
-                                        <p className="text-center font-bold mt-2">Upload Product Image</p>
-                                        <input type="file" accept="image/*" className="hidden" />
-                                    </label>
                                     <div className="w-full flex flex-col items-center space-y-5 mt-6">
-                                        <label className="w-full max-w-[23rem] flex flex-col">
-                                            <p className="font-medium">Select Category</p>
-                                            <select className="w-full h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]">
-                                                <option value="">Choose Category</option>
-                                                <option value="Clothing">Clothing</option>
-                                                <option value="Electronics">Electronics</option>
-                                                <option value="Accessories">Accessories</option>
-                                                <option value="Home Appliances">Home Appliances</option>
-                                            </select>
-                                        </label>
                                         <label className="w-full max-w-[23rem] flex flex-col">
                                             <p className="font-medium">Product Name</p>
                                             <input type="text" placeholder="Enter product name"
@@ -122,19 +107,55 @@ const AddProducts = () => {
                                         </label>
                                         <div className="flex gap-4 w-full max-w-[23rem]">
                                             <label className="flex flex-col w-1/2">
-                                                <p className="font-medium">Price (NGN)</p>
+                                                <p className="font-medium">Initial Inventory Level</p>
                                                 <input type="number" min="0" placeholder="NGN"
                                                        className="h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]" />
                                             </label>
                                             <label className="flex flex-col w-1/2">
-                                                <p className="font-medium">Order Quantity</p>
+                                                <p className="font-medium">Average Demand</p>
                                                 <input type="number" min="1" placeholder="0"
                                                        className="h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]" />
                                             </label>
                                         </div>
-                                        <button className="flex items-center text-[#009951]">
-                                            <Plus size={20} /> Add Quantity Discount
-                                        </button>
+                                        <div className="flex gap-4 w-full max-w-[23rem]">
+                                            <label className="flex flex-col w-1/2">
+                                                <p className="font-medium">Unit Selling Price (NGN)</p>
+                                                <input type="number" min="0" placeholder="NGN"
+                                                       className="h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]" />
+                                            </label>
+                                            <label className="flex flex-col w-1/2">
+                                                <p className="font-medium">Unit Holding Cost</p>
+                                                <input type="number" min="1" placeholder="0"
+                                                       className="h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]" />
+                                            </label>
+                                        </div>
+                                        <div className="flex gap-4 w-full max-w-[23rem]">
+                                            <label className="flex flex-col w-1/2">
+                                                <p className="font-medium">Unit Shortage Cost</p>
+                                                <input type="number" min="0" placeholder="NGN"
+                                                       className="h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]" />
+                                            </label>
+                                            <label className="flex flex-col w-1/2">
+                                                <p className="font-medium">Minimum Order Quantity</p>
+                                                <input type="number" min="1" placeholder="0"
+                                                       className="h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]" />
+                                            </label>
+                                        </div>
+                                        <div className="flex gap-4 w-full max-w-[23rem]">
+                                            <label className="flex flex-col w-1/2">
+                                                <p className="font-medium">Price Discount Schedule</p>
+                                                <input type="number" min="0" placeholder="NGN"
+                                                       className="h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]" />
+                                            </label>
+                                            <label className="flex flex-col w-1/2">
+                                                <p className="font-medium">Probability Distribution of Demand</p>
+                                                <input type="number" min="1" placeholder="0"
+                                                       className="h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]" />
+                                            </label>
+                                        </div>
+                                        <Button className="flex items-center bg-[#009951] text-white px-10">
+                                           Save
+                                        </Button>
                                     </div>
                                 </DialogContent>
                             </Dialog>
@@ -148,6 +169,7 @@ const AddProducts = () => {
                                     <DialogTitle className="font-bold text-2xl text-center">
                                         CSV Import
                                     </DialogTitle>
+                                    <p className="text-red-400 italic">Please ensure that your csv file has the following parameters: "Item Name", "Average demand", "Unit selling price", "Unit holding cost", "Unit shortage cost" "Minimum Order Quantity", "Price Discount Schedule", "Probability Distribution of Demand", "Initial Inventory Level"</p>
                                     <input type="file" accept={acceptableCsvFileTypes} onChange={onFileChangeHandler}/>
                                     <DialogClose>
                                         <Button onClick={uploadCsv} className="mt-4">Upload CSV</Button>
