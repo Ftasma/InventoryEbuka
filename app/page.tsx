@@ -2,7 +2,7 @@ import { Eye, Plus, Upload, User } from "lucide-react";
 import Link from "next/link";
 
 const Home = () => {
-  return ( 
+  return (
     <section className="bg-[#EFEFF0] min-h-screen w-sreen">
       <div className="flex gap-3 items-center px-6 py-4">
         <User size={26}/>
