@@ -17,6 +17,8 @@ const AddProducts = () => {
     const [tableData, setTableData] = useState<CsvRow[]>([]);
     const [headers, setHeaders] = useState<string[]>([]);
     const [csvFile, setCsvFile] = useState<File | null>(null);
+    const [isCsvUploaded, setIsCsvUploaded] = useState(false); // New state to track CSV upload
+
     // State for manual input fields
     const [manualProduct, setManualProduct] = useState<CsvRow>({
         "Item Name": "",
@@ -55,9 +57,11 @@ const AddProducts = () => {
                     const parsedData: CsvRow[] = results.data as CsvRow[];
                     setHeaders(Object.keys(parsedData[0] || {}));
                     setTableData(parsedData);
+                    setIsCsvUploaded(true); // Set CSV upload state to true
                     toast({
                         title: "Success",
                         description: "CSV imported successfully",
+                        variant: "success"
                     });
                 } else {
                     toast({
@@ -114,6 +118,7 @@ const AddProducts = () => {
         toast({
             title: "Success",
             description: "Product added.",
+            variant: "success"
         });
     };
 
@@ -142,87 +147,93 @@ const AddProducts = () => {
                 </div>
             </aside>
             <div className="h-screen flex flex-col w-full justify-center items-center -mt-[8rem]">
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] w-[30%]">
-                            <Plus size={16} /> Add new product
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogTitle className="font-bold text-2xl text-center">
-                            How do you want to add products?
-                        </DialogTitle>
-                        <div className="flex justify-between items-center">
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] w-[30%]">
-                                        <Plus size={16} /> Add manually
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="w-full max-w-[40rem] h-[75vh] overflow-y-auto no-scrollbar p-6">
-                                    <DialogTitle className="font-bold text-2xl text-center">
-                                        Add New Product
-                                    </DialogTitle>
-                                    <div className="w-full flex flex-col items-center space-y-5 mt-6">
-                                        {Object.keys(manualProduct).map((field) => (
-                                            <label key={field} className="w-full max-w-[23rem] flex flex-col">
-                                                <p className="font-medium">{field}</p>
-                                                <input
-                                                    type={field.includes("price") || field.includes("cost") || field.includes("Quantity") || field.includes("Level") ? "number" : "text"}
-                                                    placeholder={`Enter ${field}`}
-                                                    value={manualProduct[field]}
-                                                    onChange={(e) => handleManualInputChange(e, field)}
-                                                    className="w-full h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]"
-                                                />
-                                            </label>
-                                        ))}
-                                        <DialogClose>
-                                        <Button onClick={saveManualProduct} className="flex items-center bg-[#009951] text-white px-10">
-                                            Save
+                {/* Conditionally render the "Add Product" button */}
+                {!isCsvUploaded && (
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] w-[30%]">
+                                <Plus size={16} /> Add new product
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogTitle className="font-bold text-2xl text-center">
+                                How do you want to add products?
+                            </DialogTitle>
+                            <div className="flex justify-between items-center">
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] w-[30%]">
+                                            <Plus size={16} /> Add manually
                                         </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="w-full max-w-[40rem] h-[75vh] overflow-y-auto no-scrollbar p-6">
+                                        <DialogTitle className="font-bold text-2xl text-center">
+                                            Add New Product
+                                        </DialogTitle>
+                                        <div className="w-full flex flex-col items-center space-y-5 mt-6">
+                                            {Object.keys(manualProduct).map((field) => (
+                                                <label key={field} className="w-full max-w-[23rem] flex flex-col">
+                                                    <p className="font-medium">{field}</p>
+                                                    <input
+                                                        type={field.includes("price") || field.includes("cost") || field.includes("Quantity") || field.includes("Level") ? "number" : "text"}
+                                                        placeholder={`Enter ${field}`}
+                                                        value={manualProduct[field]}
+                                                        onChange={(e) => handleManualInputChange(e, field)}
+                                                        className="w-full h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]"
+                                                    />
+                                                </label>
+                                            ))}
+                                            <DialogClose>
+                                                <Button onClick={saveManualProduct} className="flex items-center bg-[#009951] text-white px-10">
+                                                    Save
+                                                </Button>
+                                            </DialogClose>
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] w-[30%]">
+                                            <Download /> Import CSV
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogTitle className="font-bold text-2xl text-center">
+                                            CSV Import
+                                        </DialogTitle>
+                                        <p className="text-red-400 italic">Please ensure that your csv file has the following parameters: "Item Name", "Average demand", "Unit selling price", "Unit holding cost", "Unit shortage cost" "Minimum Order Quantity", "Price Discount Schedule", "Probability Distribution of Demand", "Initial Inventory Level"</p>
+                                        <input type="file" accept={acceptableCsvFileTypes} onChange={onFileChangeHandler} />
+                                        <DialogClose>
+                                            <Button onClick={uploadCsv} className="mt-4">Upload CSV</Button>
                                         </DialogClose>
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] w-[30%]">
-                                        <Download /> Import CSV
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogTitle className="font-bold text-2xl text-center">
-                                        CSV Import
-                                    </DialogTitle>
-                                    <p className="text-red-400 italic">Please ensure that your csv file has the following parameters: "Item Name", "Average demand", "Unit selling price", "Unit holding cost", "Unit shortage cost" "Minimum Order Quantity", "Price Discount Schedule", "Probability Distribution of Demand", "Initial Inventory Level"</p>
-                                    <input type="file" accept={acceptableCsvFileTypes} onChange={onFileChangeHandler} />
-                                    <DialogClose>
-                                        <Button onClick={uploadCsv} className="mt-4">Upload CSV</Button>
-                                    </DialogClose>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
-                    </DialogContent>
-                </Dialog>
-                <Table>
-                    <TableCaption>A list of your added products.</TableCaption>
-                    <TableHeader>
-                        <TableRow>
-                            {headers.map((header, index) => (
-                                <TableHead key={index}>{header}</TableHead>
-                            ))}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {tableData.map((row, rowIndex) => (
-                            <TableRow key={rowIndex}>
-                                {headers.map((header, colIndex) => (
-                                    <TableCell key={colIndex}>{row[header]}</TableCell>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                )}
+                {/* Make the table height smaller and scrollable */}
+                <div className="w-full max-h-[40vh] overflow-y-auto mt-6">
+                    <Table>
+                        <TableCaption>A list of your added products.</TableCaption>
+                        <TableHeader>
+                            <TableRow>
+                                {headers.map((header, index) => (
+                                    <TableHead key={index}>{header}</TableHead>
                                 ))}
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {tableData.map((row, rowIndex) => (
+                                <TableRow key={rowIndex}>
+                                    {headers.map((header, colIndex) => (
+                                        <TableCell key={colIndex}>{row[header]}</TableCell>
+                                    ))}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
                 <Link href="/view-product">
                     <Button className="mt-10 bg-[#009951]">Submit Products for Analysis</Button>
                 </Link>
