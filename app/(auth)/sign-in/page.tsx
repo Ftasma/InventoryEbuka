@@ -9,29 +9,31 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-const SignUp = () => {
+const SignIn = () => {
   const router = useRouter();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role: "USER", // Default role
-    fullName: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Mutation for sign-up
-  const signUpMutation = useMutation({
+  // Mutation for login
+  const loginMutation = useMutation({
     mutationFn: (payload: any) =>
-      axios.post("https://ebuka-backend.onrender.com/user/register", payload),
+      axios.post("https://ebuka-backend.onrender.com/user/login", payload),
     onSuccess: (response) => {
       toast({
         title: "Success",
-        description: "Account created successfully!",
+        description: "Logged in successfully!",
         variant: "success",
       });
-      router.push("/sign-in"); // Redirect to login page after successful sign-up
+      // Save token to localStorage or cookies
+      console.log(response.data.user.id)
+      localStorage.setItem("userId",response.data.user.id)
+      localStorage.setItem("token", response.data.token);
+      router.push("/"); // Redirect to dashboard after successful login
     },
     onError: (error: any) => {
       toast({
@@ -48,7 +50,7 @@ const SignUp = () => {
   // Handle form submission
   const handleSubmit = () => {
     setIsLoading(true);
-    signUpMutation.mutate(formData);
+    loginMutation.mutate(formData);
   };
 
   // Toggle password visibility
@@ -61,28 +63,13 @@ const SignUp = () => {
       <section className="pt-6 md:px-16 px-8 flex w-full flex-col gap-4 md:w-[50%]">
         <div className="flex flex-col gap-3 w-full mx-auto">
           <h1 className="text-[#1F2223] text-2xl font-satoshi">
-            Create your account!
+            Welcome back!
           </h1>
           <p className="w-[80%] text-[#57595A] text-sm font-satoshi">
-            Please enter your credentials to create your account
+            Please enter your credentials to log in
           </p>
 
           <aside className="flex flex-col gap-3">
-            {/* Full Name */}
-            <label className="flex flex-col gap-2">
-              <p className="font-satoshi">Full name</p>
-              <input
-                required
-                value={formData.fullName}
-                onChange={(e) =>
-                  setFormData({ ...formData, fullName: e.target.value })
-                }
-                className="widthMd bg-[#EAEAEA] focus:outline-none placeholder:font-satoshi placeholder:pl-2 pl-2 md:w-full w-[80%] h-10 border-2 border-[#E5E5E5] rounded-md"
-                type="text"
-                placeholder="John Doe"
-              />
-            </label>
-
             {/* Email */}
             <label className="flex flex-col gap-2">
               <p className="font-satoshi">Email</p>
@@ -96,21 +83,6 @@ const SignUp = () => {
                 type="email"
                 placeholder="john.doe@example.com"
               />
-            </label>
-
-            {/* Role */}
-            <label className="flex flex-col gap-2">
-              <p className="font-satoshi">Role</p>
-              <select
-                value={formData.role}
-                onChange={(e) =>
-                  setFormData({ ...formData, role: e.target.value })
-                }
-                className="widthMd bg-[#EAEAEA] focus:outline-none placeholder:font-satoshi placeholder:pl-2 pl-2 md:w-full w-[80%] h-10 border-2 border-[#E5E5E5] rounded-md"
-              >
-                <option value="USER">USER</option>
-                <option value="ADMIN">ADMIN</option>
-              </select>
             </label>
 
             {/* Password */}
@@ -137,14 +109,16 @@ const SignUp = () => {
               </div>
             </label>
 
+            {/* Forgot Password Link */}
+            <Link href="/forgot-password">
+              <p className="my-1 text-sm font-satoshi text-[#0654B0]">
+                Forgot password?
+              </p>
+            </Link>
+
             {/* Submit Button */}
             <Button
-              disabled={
-                isLoading ||
-                !formData.email ||
-                !formData.password ||
-                !formData.fullName
-              }
+              disabled={isLoading || !formData.email || !formData.password}
               onClick={handleSubmit}
               className={cn(
                 "widthMd w-[80%] md:w-full text-white bg-[#0654B0] h-10 rounded",
@@ -156,15 +130,15 @@ const SignUp = () => {
                   <Loader2 className="animate-spin" size={20} />
                 </div>
               ) : (
-                "Sign Up"
+                "Login"
               )}
             </Button>
 
-            {/* Login Link */}
+            {/* Sign-Up Link */}
             <p className="text-sm font-satoshi">
-              Already have an account?{" "}
-              <Link href="/sign-in">
-                <span className="text-[#0654B0]">Login</span>
+              Don't have an account?{" "}
+              <Link href="/sign-up">
+                <span className="text-[#0654B0]">Sign up</span>
               </Link>
             </p>
           </aside>
@@ -174,4 +148,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;
