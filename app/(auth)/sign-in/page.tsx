@@ -18,6 +18,7 @@ const SignIn = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [token, setToken] = useState("");
 
   // Mutation for login
   const loginMutation = useMutation({
@@ -30,10 +31,13 @@ const SignIn = () => {
         variant: "success",
       });
       // Save token to localStorage or cookies
-      console.log(response.data.user.id)
+      console.log(response.data.accessToken)
+      setToken(response.data.accessToken)
+      console.log(token)
       localStorage.setItem("userId",response.data.user.id)
+      // localStorage.setItem("token", token);
       localStorage.setItem("token", response.data.token);
-      router.push("/"); // Redirect to dashboard after successful login
+      router.push("/"); 
     },
     onError: (error: any) => {
       toast({
@@ -59,7 +63,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-screen w-full items-center justify-center">
       <section className="pt-6 md:px-16 px-8 flex w-full flex-col gap-4 md:w-[50%]">
         <div className="flex flex-col gap-3 w-full mx-auto">
           <h1 className="text-[#1F2223] text-2xl font-satoshi">
@@ -108,13 +112,6 @@ const SignIn = () => {
                 </button>
               </div>
             </label>
-
-            {/* Forgot Password Link */}
-            <Link href="/forgot-password">
-              <p className="my-1 text-sm font-satoshi text-[#0654B0]">
-                Forgot password?
-              </p>
-            </Link>
 
             {/* Submit Button */}
             <Button

@@ -10,6 +10,7 @@ import Papa from "papaparse";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import withAuth from "@/withAuth";
 
 const acceptableCsvFileTypes = ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
 
@@ -156,7 +157,7 @@ const AddProducts = () => {
   // Mutation to submit data to the endpoint
   const submitMutation = useMutation({
     mutationFn: async (payload: Payload) => {
-      const response = await axios.post("https://ebuka-backend.onrender.com/product", payload);
+      const response = await axios.post(`https://ebuka-backend.onrender.com/product/product/${localStorage.getItem("userId")}`, payload);
       return response.data;
     },
     onSuccess: () => {
@@ -323,4 +324,4 @@ const AddProducts = () => {
   );
 };
 
-export default AddProducts;
+export default withAuth(AddProducts);

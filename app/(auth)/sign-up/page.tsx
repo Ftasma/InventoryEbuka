@@ -57,7 +57,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-screen w-full items-center justify-center">
       <section className="pt-6 md:px-16 px-8 flex w-full flex-col gap-4 md:w-[50%]">
         <div className="flex flex-col gap-3 w-full mx-auto">
           <h1 className="text-[#1F2223] text-2xl font-satoshi">

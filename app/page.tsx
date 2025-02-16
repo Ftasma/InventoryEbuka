@@ -1,6 +1,7 @@
+"use client"
 import { Eye, Plus, Upload, User } from "lucide-react";
 import Link from "next/link";
-
+import withAuth from "../withAuth"
 const Home = () => {
   return (
     <section className="bg-[#EFEFF0] min-h-screen w-sreen">
@@ -35,4 +36,4 @@ const Home = () => {
    );
 }
  
-export default Home;
+export default withAuth(Home);
