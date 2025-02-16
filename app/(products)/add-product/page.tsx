@@ -17,15 +17,15 @@ const acceptableCsvFileTypes = ".csv, application/vnd.openxmlformats-officedocum
 // Define the payload structure
 type Item = {
   name: string;
-  initialLevel: number;
-  averageDemand: number;
-  sellingPrice: number;
-  holdingCost: number;
-  shortageCost: number;
-  minimumOrder: number;
-  priceDiscountAmount: number;
-  priceDiscountUnit: number;
-  probabilityDistribution: number;
+  initialLevel: number | null;
+  averageDemand: number | null;
+  sellingPrice: number | null;
+  holdingCost: number | null;
+  shortageCost: number | null;
+  minimumOrder: number | null;
+  priceDiscountAmount: number | null;
+  priceDiscountUnit: number | null;
+  probabilityDistribution: number | null;
 };
 
 type Payload = {
@@ -54,21 +54,21 @@ const AddProducts = () => {
   const [headers, setHeaders] = useState<string[]>(requiredCsvHeaders);
 
   // State for general constraints
-  const [totalMinimumOrder, setTotalMinimumOrder] = useState<number>(0);
-  const [transportCapacity, setTransportCapacity] = useState<number>(0);
+  const [totalMinimumOrder, setTotalMinimumOrder] = useState<number | null>(null);
+  const [transportCapacity, setTransportCapacity] = useState<number | null>(null);
 
   // State for manual input fields
   const [manualProduct, setManualProduct] = useState<Item>({
     name: "",
-    initialLevel: 0,
-    averageDemand: 0,
-    sellingPrice: 0,
-    holdingCost: 0,
-    shortageCost: 0,
-    minimumOrder: 0,
-    priceDiscountAmount: 0,
-    priceDiscountUnit: 0,
-    probabilityDistribution: 0,
+    initialLevel: null,
+    averageDemand: null,
+    sellingPrice: null,
+    holdingCost: null,
+    shortageCost: null,
+    minimumOrder: null,
+    priceDiscountAmount: null,
+    priceDiscountUnit: null,
+    probabilityDistribution: null,
   });
 
   // Handle file upload
@@ -129,14 +129,14 @@ const AddProducts = () => {
     const value = e.target.value;
     setManualProduct({
       ...manualProduct,
-      [field]: typeof manualProduct[field] === "number" ? Number(value) : value,
+      [field]: field === "name" ? value : value === "" ? null : Number(value),
     });
   };
 
   // Save manually added product
   const saveManualProduct = () => {
     // Validate if all fields are filled
-    if (Object.values(manualProduct).some((value) => value === "" || value === 0)) {
+    if (Object.values(manualProduct).some((value) => value === "" || value === null)) {
       toast({
         title: "Error",
         description: "Please fill all fields.",
@@ -151,15 +151,15 @@ const AddProducts = () => {
     // Reset the form
     setManualProduct({
       name: "",
-      initialLevel: 0,
-      averageDemand: 0,
-      sellingPrice: 0,
-      holdingCost: 0,
-      shortageCost: 0,
-      minimumOrder: 0,
-      priceDiscountAmount: 0,
-      priceDiscountUnit: 0,
-      probabilityDistribution: 0,
+      initialLevel: null,
+      averageDemand: null,
+      sellingPrice: null,
+      holdingCost: null,
+      shortageCost: null,
+      minimumOrder: null,
+      priceDiscountAmount: null,
+      priceDiscountUnit: null,
+      probabilityDistribution: null,
     });
 
     toast({
@@ -171,6 +171,14 @@ const AddProducts = () => {
 
   // Save general constraints to local storage
   const saveGeneralConstraints = () => {
+    if (totalMinimumOrder === null || transportCapacity === null) {
+      toast({
+        title: "Error",
+        description: "Please fill all fields.",
+        variant: "destructive",
+      });
+      return;
+    }
     localStorage.setItem("totalMinimumOrder", totalMinimumOrder.toString());
     localStorage.setItem("transportCapacity", transportCapacity.toString());
     toast({
@@ -223,8 +231,8 @@ const AddProducts = () => {
   // Check if all fields are filled
   const isSubmitDisabled =
     tableData.length === 0 ||
-    !totalMinimumOrder ||
-    !transportCapacity ||
+    totalMinimumOrder === null ||
+    transportCapacity === null ||
     submitMutation.isPending;
 
   return (
@@ -242,8 +250,8 @@ const AddProducts = () => {
               type="number"
               min="0"
               placeholder="0"
-              value={totalMinimumOrder}
-              onChange={(e) => setTotalMinimumOrder(Number(e.target.value))}
+              value={totalMinimumOrder ?? ""}
+              onChange={(e) => setTotalMinimumOrder(e.target.value === "" ? null : Number(e.target.value))}
               className="h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]"
             />
           </label>
@@ -253,8 +261,8 @@ const AddProducts = () => {
               type="number"
               min="1"
               placeholder="0"
-              value={transportCapacity}
-              onChange={(e) => setTransportCapacity(Number(e.target.value))}
+              value={transportCapacity ?? ""}
+              onChange={(e) => setTransportCapacity(e.target.value === "" ? null : Number(e.target.value))}
               className="h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]"
             />
           </label>
@@ -291,9 +299,9 @@ const AddProducts = () => {
                         <label key={field} className="w-full max-w-[23rem] flex flex-col">
                           <p className="font-medium">{field}</p>
                           <input
-                            type={typeof manualProduct[field as keyof Item] === "number" ? "number" : "text"}
+                            type={field === "name" ? "text" : "number"}
                             placeholder={`Enter ${field}`}
-                            value={manualProduct[field as keyof Item]}
+                            value={manualProduct[field as keyof Item] ?? ""}
                             onChange={(e) => handleManualInputChange(e, field as keyof Item)}
                             className="w-full h-[2.5rem] rounded border px-3 outline-none focus:ring focus:ring-[#009951]"
                           />
