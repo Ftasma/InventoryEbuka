@@ -71,18 +71,18 @@ const ViewProduct = () => {
   }, [toast]);
 
   // Handle product click
-  const handleProductClick = async (itemId: string) => {
+  const handleProductClick = async (orderId: string) => {
     setIsModalLoading(true); // Start loading for modal
     setIsModalOpen(true); // Open the modal immediately
 
     try {
       const response = await axios.post(
         "https://ebuka-backend.onrender.com/product/single-product",
-        { id: itemId, userId: localStorage.getItem("userId") }
+        { id: orderId, userId: localStorage.getItem("userId") }
       );
 
       if (response.data) {
-        setSelectedProduct(response.data); // Set the selected product
+        setSelectedProduct(response.data.data); // Set the selected product
       } else {
         toast({
           title: "Error",
@@ -149,7 +149,7 @@ const ViewProduct = () => {
                 order.items.map((item: any) => (
                   <TableRow
                     key={item.id} // Use item.id as the key
-                    onClick={() => handleProductClick(item.id)} // Pass item.id to handleProductClick
+                    onClick={() => handleProductClick(order.id)} // Pass order.id to handleProductClick
                     className="cursor-pointer hover:bg-gray-100 transition-colors"
                   >
                     {headers.map((header) => (
@@ -172,7 +172,7 @@ const ViewProduct = () => {
       {/* Modal for displaying product details */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
-          <div className="bg-white p-6 rounded-lg w-11/12 max-w-md shadow-lg">
+          <div className="bg-white p-6 rounded-lg w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto shadow-lg">
             <h2 className="text-xl font-bold mb-4 text-gray-800">Product Details</h2>
             {isModalLoading ? (
               <div className="space-y-2">
@@ -181,17 +181,48 @@ const ViewProduct = () => {
                 ))}
               </div>
             ) : selectedProduct ? (
-              <div className="space-y-2">
-                {Object.entries(selectedProduct).map(([key, value]:any) => (
-                  <div key={key} className="text-gray-700">
-                    <strong className="capitalize">{key}:</strong>{" "}
-                    {value === null || value === undefined
-                      ? "N/A" // Handle null or undefined values
-                      : typeof value === "object"
-                      ? JSON.stringify(value) // Handle objects
-                      : value}
+              <div className="space-y-4">
+                {/* Display Items */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Items</h3>
+                  <div className="space-y-2">
+                    {selectedProduct.items.map((item: any) => (
+                      <div key={item.id} className="bg-gray-50 p-4 rounded-lg">
+                        {Object.entries(item).map(([key, value]:any) => (
+                          <div key={key} className="text-gray-700">
+                            <strong className="capitalize">{key}:</strong>{" "}
+                            {value === null || value === undefined
+                              ? "N/A"
+                              : typeof value === "object"
+                              ? JSON.stringify(value)
+                              : value}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+
+                {/* Display JPR Suggestions */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">JPR Suggestions</h3>
+                  <div className="space-y-2">
+                    {selectedProduct.JprSuggestions.map((suggestion: any) => (
+                      <div key={suggestion.id} className="bg-gray-50 p-4 rounded-lg">
+                        {Object.entries(suggestion).map(([key, value]:any) => (
+                          <div key={key} className="text-gray-700">
+                            <strong className="capitalize">{key}:</strong>{" "}
+                            {value === null || value === undefined
+                              ? "N/A"
+                              : typeof value === "object"
+                              ? JSON.stringify(value)
+                              : value}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             ) : (
               <p className="text-gray-600">No product details available.</p>

@@ -15,13 +15,13 @@ const SignUp = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role: "USER", // Default role
+    role: "USER", 
     fullName: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Mutation for sign-up
+  
   const signUpMutation = useMutation({
     mutationFn: (payload: any) =>
       axios.post("https://ebuka-backend.onrender.com/user/register", payload),
@@ -31,7 +31,7 @@ const SignUp = () => {
         description: "Account created successfully!",
         variant: "success",
       });
-      router.push("/sign-in"); // Redirect to login page after successful sign-up
+      router.push("/sign-in");
     },
     onError: (error: any) => {
       toast({
@@ -41,17 +41,16 @@ const SignUp = () => {
       });
     },
     onSettled: () => {
-      setIsLoading(false); // Reset loading state
+      setIsLoading(false); 
     },
   });
 
-  // Handle form submission
+
   const handleSubmit = () => {
     setIsLoading(true);
     signUpMutation.mutate(formData);
   };
 
-  // Toggle password visibility
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -68,7 +67,7 @@ const SignUp = () => {
           </p>
 
           <aside className="flex flex-col gap-3">
-            {/* Full Name */}
+
             <label className="flex flex-col gap-2">
               <p className="font-satoshi">Full name</p>
               <input
@@ -83,7 +82,6 @@ const SignUp = () => {
               />
             </label>
 
-            {/* Email */}
             <label className="flex flex-col gap-2">
               <p className="font-satoshi">Email</p>
               <input
@@ -98,7 +96,7 @@ const SignUp = () => {
               />
             </label>
 
-            {/* Role */}
+      
             <label className="flex flex-col gap-2">
               <p className="font-satoshi">Role</p>
               <select
@@ -113,7 +111,7 @@ const SignUp = () => {
               </select>
             </label>
 
-            {/* Password */}
+
             <label className="flex flex-col gap-2 relative">
               <p className="font-satoshi">Password</p>
               <div className="relative widthMd md:w-[100%] w-[80%]">
@@ -124,7 +122,7 @@ const SignUp = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
-                  className="widthMd bg-[#EAEAEA] focus:outline-none placeholder:pl-2 placeholder:font-satoshi pl-2 md:w-full w-[80%] h-10 border-2 border-[#E5E5E5] rounded-md"
+                  className="widthMd bg-[#EAEAEA] focus:outline-none placeholder:pl-2 placeholder:font-satoshi pl-2 w-full h-10 border-2 border-[#E5E5E5] rounded-md"
                   type={showPassword ? "text" : "password"}
                 />
                 <button
@@ -137,7 +135,7 @@ const SignUp = () => {
               </div>
             </label>
 
-            {/* Submit Button */}
+           
             <Button
               disabled={
                 isLoading ||
@@ -160,7 +158,7 @@ const SignUp = () => {
               )}
             </Button>
 
-            {/* Login Link */}
+          
             <p className="text-sm font-satoshi">
               Already have an account?{" "}
               <Link href="/sign-in">

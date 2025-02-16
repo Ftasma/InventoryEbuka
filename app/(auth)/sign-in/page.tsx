@@ -20,7 +20,7 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [token, setToken] = useState("");
 
-  // Mutation for login
+  
   const loginMutation = useMutation({
     mutationFn: (payload: any) =>
       axios.post("https://ebuka-backend.onrender.com/user/login", payload),
@@ -30,7 +30,7 @@ const SignIn = () => {
         description: "Logged in successfully!",
         variant: "success",
       });
-      // Save token to localStorage or cookies
+      
       console.log(response.data.accessToken)
       setToken(response.data.accessToken)
       console.log(token)
@@ -39,25 +39,26 @@ const SignIn = () => {
       localStorage.setItem("token", response.data.token);
       router.push("/"); 
     },
-    onError: (error: any) => {
+    onError: (response: any) => {
+      console.log(response)
       toast({
         title: "Error",
-        description: error.response?.data?.message || "An error occurred",
+        description: response?.data?.error || "An error occurred",
         variant: "destructive",
       });
     },
     onSettled: () => {
-      setIsLoading(false); // Reset loading state
+      setIsLoading(false); 
     },
   });
 
-  // Handle form submission
+
   const handleSubmit = () => {
     setIsLoading(true);
     loginMutation.mutate(formData);
   };
 
-  // Toggle password visibility
+ 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -74,7 +75,7 @@ const SignIn = () => {
           </p>
 
           <aside className="flex flex-col gap-3">
-            {/* Email */}
+            
             <label className="flex flex-col gap-2">
               <p className="font-satoshi">Email</p>
               <input
@@ -89,7 +90,7 @@ const SignIn = () => {
               />
             </label>
 
-            {/* Password */}
+            
             <label className="flex flex-col gap-2 relative">
               <p className="font-satoshi">Password</p>
               <div className="relative widthMd md:w-[100%] w-[80%]">
@@ -100,7 +101,7 @@ const SignIn = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
-                  className="widthMd bg-[#EAEAEA] focus:outline-none placeholder:pl-2 placeholder:font-satoshi pl-2 md:w-full w-[80%] h-10 border-2 border-[#E5E5E5] rounded-md"
+                  className="widthMd bg-[#EAEAEA] focus:outline-none placeholder:pl-2 placeholder:font-satoshi pl-2 w-full  h-10 border-2 border-[#E5E5E5] rounded-md"
                   type={showPassword ? "text" : "password"}
                 />
                 <button
@@ -113,7 +114,7 @@ const SignIn = () => {
               </div>
             </label>
 
-            {/* Submit Button */}
+            
             <Button
               disabled={isLoading || !formData.email || !formData.password}
               onClick={handleSubmit}
@@ -131,7 +132,7 @@ const SignIn = () => {
               )}
             </Button>
 
-            {/* Sign-Up Link */}
+           
             <p className="text-sm font-satoshi">
               Don't have an account?{" "}
               <Link href="/sign-up">

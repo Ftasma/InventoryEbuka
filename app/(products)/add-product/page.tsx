@@ -157,7 +157,7 @@ const AddProducts = () => {
   // Mutation to submit data to the endpoint
   const submitMutation = useMutation({
     mutationFn: async (payload: Payload) => {
-      const response = await axios.post(`https://ebuka-backend.onrender.com/product/product/${localStorage.getItem("userId")}`, payload);
+      const response = await axios.post(`https://ebuka-backend.onrender.com/product/create/${localStorage.getItem("userId")}`, payload);
       return response.data;
     },
     onSuccess: () => {
@@ -230,7 +230,7 @@ const AddProducts = () => {
         {!isCsvUploaded && (
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] w-[30%]">
+              <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] p-2">
                 <Plus size={16} /> Add new product
               </Button>
             </DialogTrigger>
@@ -241,7 +241,7 @@ const AddProducts = () => {
               <div className="flex justify-between items-center">
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] w-[30%]">
+                    <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] p-2">
                       <Plus size={16} /> Add manually
                     </Button>
                   </DialogTrigger>
@@ -272,7 +272,7 @@ const AddProducts = () => {
                 </Dialog>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] w-[30%]">
+                    <Button className="rounded bg-white border-[#0654B0] border text-[#0654B0] p-2">
                       <Download /> Import CSV
                     </Button>
                   </DialogTrigger>
