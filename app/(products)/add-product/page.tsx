@@ -34,10 +34,24 @@ type Payload = {
   items: Item[];
 };
 
+const requiredCsvHeaders = [
+  "name",
+  "initialLevel",
+  "averageDemand",
+  "sellingPrice",
+  "holdingCost",
+  "shortageCost",
+  "minimumOrder",
+  "priceDiscountAmount",
+  "priceDiscountUnit",
+  "probabilityDistribution",
+];
+
 const AddProducts = () => {
   const { toast } = useToast();
   const [tableData, setTableData] = useState<Item[]>([]);
   const [isCsvUploaded, setIsCsvUploaded] = useState(false);
+  const [headers, setHeaders] = useState<string[]>(requiredCsvHeaders);
 
   // State for general constraints
   const [totalMinimumOrder, setTotalMinimumOrder] = useState<number>(0);
@@ -66,6 +80,17 @@ const AddProducts = () => {
         header: true,
         complete: (results) => {
           if (results.data.length > 0) {
+            // Validate CSV headers
+            const csvHeaders = results.meta.fields;
+            if (!csvHeaders || !requiredCsvHeaders.every((header) => csvHeaders.includes(header))) {
+              toast({
+                title: "Error",
+                description: "CSV headers do not match the required fields.",
+                variant: "destructive",
+              });
+              return;
+            }
+
             // Convert numeric fields to numbers
             const parsedData: Item[] = results.data.map((item) => ({
               name: item.name,
@@ -81,6 +106,7 @@ const AddProducts = () => {
             }));
             setTableData(parsedData);
             setIsCsvUploaded(true);
+            setHeaders(csvHeaders); // Update headers based on CSV
             toast({
               title: "Success",
               description: "CSV imported successfully",
@@ -157,7 +183,10 @@ const AddProducts = () => {
   // Mutation to submit data to the endpoint
   const submitMutation = useMutation({
     mutationFn: async (payload: Payload) => {
-      const response = await axios.post(`https://ebuka-backend.onrender.com/product/create/${localStorage.getItem("userId")}`, payload);
+      const response = await axios.post(
+        `https://ebuka-backend.onrender.com/product/create/${localStorage.getItem("userId")}`,
+        payload
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -170,6 +199,7 @@ const AddProducts = () => {
       localStorage.removeItem("totalMinimumOrder");
       localStorage.removeItem("transportCapacity");
       setTableData([]);
+      location.replace("/view-product");
     },
     onError: () => {
       toast({
@@ -189,6 +219,13 @@ const AddProducts = () => {
     };
     submitMutation.mutate(payload);
   };
+
+  // Check if all fields are filled
+  const isSubmitDisabled =
+    tableData.length === 0 ||
+    !totalMinimumOrder ||
+    !transportCapacity ||
+    submitMutation.isPending;
 
   return (
     <section className="p-8 w-full h-screen">
@@ -300,7 +337,7 @@ const AddProducts = () => {
             <TableCaption>A list of your added products.</TableCaption>
             <TableHeader>
               <TableRow>
-                {Object.keys(manualProduct).map((header, index) => (
+                {headers.map((header, index) => (
                   <TableHead key={index}>{header}</TableHead>
                 ))}
               </TableRow>
@@ -316,8 +353,12 @@ const AddProducts = () => {
             </TableBody>
           </Table>
         </div>
-        <Button onClick={handleSubmit} className="mt-10 bg-[#009951]">
-          Submit Products for Analysis
+        <Button
+          onClick={handleSubmit}
+          className="mt-10 bg-[#009951]"
+          disabled={isSubmitDisabled}
+        >
+          {submitMutation.isPending ? "Submitting..." : "Submit Products for Analysis"}
         </Button>
       </div>
     </section>
