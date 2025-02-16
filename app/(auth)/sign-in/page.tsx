@@ -32,6 +32,8 @@ const SignIn = () => {
       });
       
       console.log(response.data.accessToken)
+      console.log(response.data.user.fullName)
+      localStorage.setItem("userName", response.data.user.fullName)
       setToken(response.data.accessToken)
       console.log(token)
       localStorage.setItem("userId",response.data.user.id)

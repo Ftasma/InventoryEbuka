@@ -8,7 +8,7 @@ const Home = () => {
       <div className="flex gap-3 items-center px-6 py-4">
         <User size={26}/>
         <aside className="flex flex-col">
-          <p className="font-bold text-[1.5rem]">Hi Ebuka</p>
+          <p className="font-bold text-[1.5rem]">Hi {localStorage.getItem("userName")}</p>
           <p className="font-semibold">Welcome back!</p>
         </aside>
       </div>
