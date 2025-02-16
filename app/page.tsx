@@ -2,15 +2,18 @@
 import { Eye, Plus, Upload, User } from "lucide-react";
 import Link from "next/link";
 import withAuth from "../withAuth"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const Home = () => {
-  const [userName, setUserName]= useState()
+  const [userName, setUserName]= useState<any>()
+  useEffect(()=>{
+    setUserName(localStorage.getItem("userName"))
+  },[])
   return (
     <section className="bg-[#EFEFF0] min-h-screen w-sreen">
       <div className="flex gap-3 items-center px-6 py-4">
         <User size={26}/>
         <aside className="flex flex-col">
-          <p className="font-bold text-[1.5rem]">Hi {localStorage?.getItem("userName")||"User"}</p>
+          <p className="font-bold text-[1.5rem]">Hi {userName||"User"}</p>
           <p className="font-semibold">Welcome back!</p>
         </aside>
       </div>
