@@ -82,7 +82,35 @@ const ViewProduct = () => {
       );
 
       if (response.data) {
-        setSelectedProduct(response.data.data); // Set the selected product
+        // Parse JSON strings in JprSuggestions
+        const parsedJprSuggestions = response.data.data.JprSuggestions.map(
+          (suggestion: any) => {
+            try {
+              return {
+                ...suggestion,
+                optimalOrderQuantities: JSON.parse(suggestion.optimalOrderQuantities || "{}"),
+                costBreakdown: JSON.parse(suggestion.costBreakdown || "{}"),
+                orderStrategy: JSON.parse(suggestion.orderStrategy || "{}"),
+              };
+            } catch (error) {
+              console.error("Failed to parse JSON:", error);
+              return {
+                ...suggestion,
+                optimalOrderQuantities: {},
+                costBreakdown: {},
+                orderStrategy: {},
+              };
+            }
+          }
+        );
+
+        // Update the response data with parsed suggestions
+        const updatedProduct = {
+          ...response.data.data,
+          JprSuggestions: parsedJprSuggestions,
+        };
+
+        setSelectedProduct(updatedProduct); // Set the selected product
       } else {
         toast({
           title: "Error",
@@ -188,7 +216,7 @@ const ViewProduct = () => {
                   <div className="space-y-2">
                     {selectedProduct.items.map((item: any) => (
                       <div key={item.id} className="bg-gray-50 p-4 rounded-lg">
-                        {Object.entries(item).map(([key, value]:any) => (
+                        {Object.entries(item).map(([key, value]: any) => (
                           <div key={key} className="text-gray-700">
                             <strong className="capitalize">{key}:</strong>{" "}
                             {value === null || value === undefined
@@ -209,16 +237,79 @@ const ViewProduct = () => {
                   <div className="space-y-2">
                     {selectedProduct.JprSuggestions.map((suggestion: any) => (
                       <div key={suggestion.id} className="bg-gray-50 p-4 rounded-lg">
-                        {Object.entries(suggestion).map(([key, value]:any) => (
-                          <div key={key} className="text-gray-700">
-                            <strong className="capitalize">{key}:</strong>{" "}
-                            {value === null || value === undefined
-                              ? "N/A"
-                              : typeof value === "object"
-                              ? JSON.stringify(value)
-                              : value}
-                          </div>
-                        ))}
+                        {/* Display non-object fields */}
+                        {Object.entries(suggestion).map(([key, value]: any) => {
+                          // Skip fields that are already parsed into objects
+                          if (
+                            key === "optimalOrderQuantities" ||
+                            key === "costBreakdown" ||
+                            key === "orderStrategy"
+                          ) {
+                            return null; // These will be handled separately
+                          }
+                          return (
+                            <div key={key} className="text-gray-700">
+                              <strong className="capitalize">{key}:</strong>{" "}
+                              {value === null || value === undefined
+                                ? "N/A"
+                                : typeof value === "object"
+                                ? JSON.stringify(value)
+                                : value}
+                            </div>
+                          );
+                        })}
+
+                        {/* Display parsed JSON objects */}
+                        <div className="mt-2">
+                          <strong className="capitalize">Optimal Order Quantities:</strong>
+                          {Object.keys(suggestion.optimalOrderQuantities).length > 0 ? (
+                            <div className="bg-gray-100 p-2 rounded text-sm">
+                              {Object.entries(suggestion.optimalOrderQuantities).map(
+                                ([item, quantity]: any) => (
+                                  <div key={item} className="text-gray-700">
+                                    <strong>{item}:</strong> {quantity}
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-gray-500">No data available.</p>
+                          )}
+                        </div>
+
+                        <div className="mt-2">
+                          <strong className="capitalize">Cost Breakdown:</strong>
+                          {Object.keys(suggestion.costBreakdown).length > 0 ? (
+                            <div className="bg-gray-100 p-2 rounded text-sm">
+                              {Object.entries(suggestion.costBreakdown).map(
+                                ([costType, amount]: any) => (
+                                  <div key={costType} className="text-gray-700">
+                                    <strong>{costType}:</strong> {amount}
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-gray-500">No data available.</p>
+                          )}
+                        </div>
+
+                        <div className="mt-2">
+                          <strong className="capitalize">Order Strategy:</strong>
+                          {Object.keys(suggestion.orderStrategy).length > 0 ? (
+                            <div className="bg-gray-100 p-2 rounded text-sm">
+                              {Object.entries(suggestion.orderStrategy).map(
+                                ([strategy, value]: any) => (
+                                  <div key={strategy} className="text-gray-700">
+                                    <strong>{strategy}:</strong> {value.toString()}
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-gray-500">No data available.</p>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
